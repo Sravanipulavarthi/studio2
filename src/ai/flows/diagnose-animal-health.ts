@@ -17,7 +17,7 @@ const DiagnoseAnimalHealthInputSchema = z.object({
     .describe(
       "A photo of an animal, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'."
     ),
-  symptoms: z.string().describe('A description of the animal\'s symptoms.'),
+  symptoms: z.string().describe("A description of the animal's symptoms."),
   animalType: z.string().describe('The type of animal.'),
 });
 export type DiagnoseAnimalHealthInput = z.infer<typeof DiagnoseAnimalHealthInputSchema>;
@@ -58,7 +58,13 @@ const diagnoseAnimalHealthFlow = ai.defineFlow(
     outputSchema: DiagnoseAnimalHealthOutputSchema,
   },
   async input => {
+    if (!input.symptoms) {
+      throw new Error("Symptoms are required for diagnosis.");
+    }
     const {output} = await prompt(input);
-    return output!;
+    if (!output) {
+      throw new Error("Unable to get a diagnosis from the model.");
+    }
+    return output;
   }
 );

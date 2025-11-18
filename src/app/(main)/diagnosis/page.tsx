@@ -56,8 +56,6 @@ export default function DiagnosisPage() {
     resolver: zodResolver(diagnosisSchema),
   });
   
-  const symptomsValue = watch('symptoms');
-  
   useEffect(() => {
     if (transcript) {
         setValue('symptoms', transcript);
@@ -97,7 +95,7 @@ export default function DiagnosisPage() {
       });
 
     } catch (error) {
-      console.error(error);
+      console.error("Diagnosis failed:", error);
       toast({
         variant: 'destructive',
         title: 'Diagnosis Failed',
