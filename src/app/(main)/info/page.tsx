@@ -39,23 +39,6 @@ export default function InfoPage() {
 
   return (
     <div className="container mx-auto px-4 py-12">
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-1 space-y-8">
-            <Card className="shadow-lg">
-                <CardHeader>
-                    <CardTitle className="text-2xl font-bold">About VetConnect</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4 text-muted-foreground">
-                    <p>
-                    VetConnect is a modern web application designed to provide immediate veterinary assistance to farmers and pet owners.
-                    </p>
-                    <p>
-                    Our platform leverages technology to bridge the gap between animal caretakers and professional veterinary services, ensuring timely and effective care.
-                    </p>
-                </CardContent>
-            </Card>
-        </div>
-        <div className="lg:col-span-2">
           <Card className="shadow-lg">
             <CardHeader>
               <CardTitle className="text-3xl font-bold flex items-center gap-2">
@@ -126,8 +109,6 @@ export default function InfoPage() {
               )}
             </CardContent>
           </Card>
-        </div>
-      </div>
     </div>
   );
 }

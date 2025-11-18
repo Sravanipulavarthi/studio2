@@ -11,8 +11,8 @@ export const navLinks = [
   { href: '/records', label: 'Records' },
   { href: '/doctor-assignment', label: 'Assign Doctor' },
   { href: '/hospitals', label: 'Hospitals' },
-  { href: '/info', label: 'Info' },
-  { href: '/contact', label: 'Contact' },
+  { href: '/info', label: 'Disease Info' },
+  { href: '/contact', label: 'About & Contact' },
 ];
 
 export function MainNav() {
