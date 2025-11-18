@@ -1,3 +1,28 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "login-hero",
+      "description": "A veterinarian caring for a calf",
+      "imageUrl": "https://images.unsplash.com/photo-1709846818428-2fc83c8c5bbe?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHx2ZXRlcmluYXJpYW4lMjBhbmltYWx8ZW58MHx8fHwxNzYzNDY2MTk2fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "veterinarian animal"
+    },
+    {
+      "id": "user-avatar",
+      "description": "Avatar for a user profile",
+      "imageUrl": "https://images.unsplash.com/photo-1544005313-94ddf0286df2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxwZXJzb24lMjBwb3J0cmFpdHxlbnwwfHx8fDE3NjMzODMwNzB8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "person portrait"
+    },
+    {
+      "id": "cow-image",
+      "description": "A healthy cow in a field",
+      "imageUrl": "https://images.unsplash.com/photo-1598122739917-955530772a56?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxjb3clMjBmaWVsZHxlbnwwfHx8fDE3NjM0NjYxOTZ8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "cow field"
+    },
+    {
+      "id": "chicken-image",
+      "description": "A chicken in a farm setting",
+      "imageUrl": "https://images.unsplash.com/photo-1731328966800-b677e4fcda8d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxjaGlja2VuJTIwZmFybXxlbnwwfHx8fDE3NjMzNjQxMDR8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "chicken farm"
+    }
+  ]
 }
