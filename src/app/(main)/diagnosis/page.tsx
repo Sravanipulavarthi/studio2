@@ -4,7 +4,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import React, { useState, useEffect } from 'react';
-import { Camera, Loader2, Mic, MicOff, X, Sparkles, Lightbulb, ShieldCheck } from 'lucide-react';
+import { Camera, Loader2, Mic, MicOff, X, Sparkles, Lightbulb, ShieldCheck, PawPrint, MessageSquare, Bone } from 'lucide-react';
 import Image from 'next/image';
 
 import { Button } from '@/components/ui/button';
@@ -28,7 +28,7 @@ import {
 import { useToast } from '@/hooks/use-toast';
 import { animalTypes } from '@/lib/data';
 import { useSpeechRecognition } from '@/hooks/use-speech-recognition';
-import { diagnoseAnimalHealth, DiagnoseAnimalHealthOutput } from '@/ai/flows/diagnose-animal-health';
+import { diagnoseAnimalHealth, DiagnoseAnimalHealthOutput, DiagnoseAnimalHealthInput } from '@/ai/flows/diagnose-animal-health';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 const diagnosisSchema = z.object({
@@ -44,6 +44,8 @@ export default function DiagnosisPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [diagnosis, setDiagnosis] = useState<DiagnoseAnimalHealthOutput | null>(null);
+  const [submittedData, setSubmittedData] = useState<DiagnoseAnimalHealthInput | null>(null);
+
 
   const {
     isListening,
@@ -78,20 +80,26 @@ export default function DiagnosisPage() {
   const onSubmit = async (data: DiagnosisFormValues) => {
     setIsSubmitting(true);
     setDiagnosis(null);
+    setSubmittedData(null);
     
     try {
-      const input = {
+      const input: DiagnoseAnimalHealthInput = {
         animalType: data.animalType,
         symptoms: data.symptoms,
-        ...(imagePreview && { photoDataUri: imagePreview }),
       };
+
+      if (imagePreview) {
+        input.photoDataUri = imagePreview;
+      }
+      
+      setSubmittedData(input);
 
       const diagnosisResult = await diagnoseAnimalHealth(input);
       setDiagnosis(diagnosisResult);
 
       toast({
         title: 'Analysis Complete',
-        description: `See AI diagnosis below.`,
+        description: `See AI diagnosis report below.`,
       });
 
     } catch (error) {
@@ -110,6 +118,7 @@ export default function DiagnosisPage() {
     reset();
     setImagePreview(null);
     setDiagnosis(null);
+    setSubmittedData(null);
   }
 
   return (
@@ -122,7 +131,7 @@ export default function DiagnosisPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {!diagnosis ? (
+          {!submittedData ? (
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
               <div className="space-y-2">
                 <Label className="text-lg font-semibold">Animal Type</Label>
@@ -199,35 +208,81 @@ export default function DiagnosisPage() {
             </form>
           ) : (
             <div className="space-y-6">
-              <Alert>
-                <Sparkles className="h-4 w-4" />
-                <AlertTitle className="text-xl">AI Diagnosis Complete</AlertTitle>
-                <AlertDescription>
-                  This is a preliminary analysis. Always consult with a qualified veterinarian.
-                </AlertDescription>
-              </Alert>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <Alert>
+                    <Sparkles className="h-4 w-4" />
+                    <AlertTitle className="text-xl">AI Diagnosis Report</AlertTitle>
+                    <AlertDescription>
+                    This is a preliminary analysis. Always consult with a qualified veterinarian.
+                    </AlertDescription>
+                </Alert>
+                
                 <Card>
-                    <CardHeader className="flex-row items-center gap-4 space-y-0 pb-2">
-                        <ShieldCheck className="h-8 w-8 text-primary"/>
-                        <CardTitle>Suspected Disease</CardTitle>
+                    <CardHeader>
+                        <CardTitle className="text-xl">Submission Summary</CardTitle>
                     </CardHeader>
-                    <CardContent>
-                        <p className="text-2xl font-bold">{diagnosis.disease}</p>
-                        <p className="text-sm text-muted-foreground">Confidence: {diagnosis.confidence}</p>
+                    <CardContent className="space-y-4">
+                        <div className="flex items-start gap-4">
+                           <PawPrint className="h-5 w-5 text-muted-foreground mt-1" />
+                           <div>
+                                <p className="font-semibold">Animal Type</p>
+                                <p className="text-muted-foreground">{submittedData.animalType}</p>
+                           </div>
+                        </div>
+                        <div className="flex items-start gap-4">
+                           <MessageSquare className="h-5 w-5 text-muted-foreground mt-1" />
+                           <div>
+                                <p className="font-semibold">Symptoms</p>
+                                <p className="text-muted-foreground">{submittedData.symptoms}</p>
+                           </div>
+                        </div>
+                        {submittedData.photoDataUri && (
+                            <div className="space-y-2">
+                                <p className="font-semibold">Submitted Image</p>
+                                <div className="relative w-full h-48 rounded-md overflow-hidden">
+                                <Image src={submittedData.photoDataUri} alt="Submitted animal" layout="fill" objectFit="cover" />
+                                </div>
+                            </div>
+                        )}
                     </CardContent>
                 </Card>
-                 <Card>
-                    <CardHeader className="flex-row items-center gap-4 space-y-0 pb-2">
-                        <Lightbulb className="h-8 w-8 text-amber-500"/>
-                        <CardTitle>Recommended Plan</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <p>{diagnosis.treatmentPlan}</p>
-                    </CardContent>
-                </Card>
-              </div>
-              <div className="flex justify-center gap-4">
+
+              {isSubmitting ? (
+                <div className="flex items-center justify-center gap-2 py-8">
+                    <Loader2 className="h-6 w-6 animate-spin text-primary"/>
+                    <p className="text-lg">Analyzing...</p>
+                </div>
+              ) : diagnosis ? (
+                <div className="space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <Card>
+                            <CardHeader className="flex-row items-center gap-4 space-y-0 pb-2">
+                                <ShieldCheck className="h-8 w-8 text-primary"/>
+                                <CardTitle>Suspected Disease</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <p className="text-2xl font-bold">{diagnosis.disease}</p>
+                                <p className="text-sm text-muted-foreground">Confidence: {diagnosis.confidence}</p>
+                            </CardContent>
+                        </Card>
+                        <Card>
+                            <CardHeader className="flex-row items-center gap-4 space-y-0 pb-2">
+                                <Bone className="h-8 w-8 text-amber-500"/>
+                                <CardTitle>Recommended Plan</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <p>{diagnosis.treatmentPlan}</p>
+                            </CardContent>
+                        </Card>
+                    </div>
+                </div>
+              ) : (
+                 <Alert variant="destructive">
+                    <AlertTitle>Analysis Failed</AlertTitle>
+                    <AlertDescription>We couldn't generate a diagnosis. Please try again or rephrase your symptoms.</AlertDescription>
+                </Alert>
+              )}
+
+              <div className="flex justify-center gap-4 pt-4">
                 <Button onClick={handleNewDiagnosis} variant="outline" className="w-full max-w-sm h-12 text-lg">
                     Start New Diagnosis
                 </Button>
