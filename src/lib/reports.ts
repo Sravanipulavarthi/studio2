@@ -1,5 +1,7 @@
 'use client';
 
+import { DiagnoseAnimalHealthOutput } from "@/ai/flows/diagnose-animal-health";
+
 type Report = {
     id?: string;
     animalType: string;
@@ -8,6 +10,7 @@ type Report = {
     status: 'Resolved' | 'Pending' | 'Urgent';
     symptoms?: string;
     image?: string | null;
+    diagnosis?: DiagnoseAnimalHealthOutput | null;
 };
 
 let reports: Report[] = [
