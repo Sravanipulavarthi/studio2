@@ -52,9 +52,18 @@ export default function DiagnosisPage() {
     stopListening,
   } = useSpeechRecognition();
 
-  const { control, register, handleSubmit, formState: { errors }, setValue, reset } = useForm<DiagnosisFormValues>({
+  const { control, register, handleSubmit, formState: { errors }, setValue, reset, watch } = useForm<DiagnosisFormValues>({
     resolver: zodResolver(diagnosisSchema),
   });
+  
+  const symptomsValue = watch('symptoms', transcript);
+  
+  React.useEffect(() => {
+    if (transcript) {
+        setValue('symptoms', transcript);
+    }
+  }, [transcript, setValue]);
+
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -73,11 +82,13 @@ export default function DiagnosisPage() {
     setDiagnosis(null);
     
     try {
-      const diagnosisResult = await diagnoseAnimalHealth({
+      const input = {
         animalType: data.animalType,
         symptoms: data.symptoms,
-        photoDataUri: imagePreview || undefined,
-      });
+        ...(imagePreview && { photoDataUri: imagePreview }),
+      };
+
+      const diagnosisResult = await diagnoseAnimalHealth(input);
       setDiagnosis(diagnosisResult);
 
       toast({
@@ -90,7 +101,7 @@ export default function DiagnosisPage() {
       toast({
         variant: 'destructive',
         title: 'Diagnosis Failed',
-        description: 'An error occurred during AI analysis.',
+        description: 'An error occurred during AI analysis. Please try again.',
       });
     } finally {
       setIsSubmitting(false);
@@ -146,7 +157,8 @@ export default function DiagnosisPage() {
                     placeholder="e.g., The cow is lethargic, has a high fever, and is not eating..."
                     className="min-h-[150px] text-base pr-12"
                     {...register('symptoms')}
-                    defaultValue={transcript}
+                    value={symptomsValue}
+                    onChange={(e) => setValue('symptoms', e.target.value)}
                   />
                   <Button
                     type="button"
@@ -163,7 +175,7 @@ export default function DiagnosisPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="animalImage" className="text-lg font-semibold">Upload Image</Label>
+                <Label htmlFor="animalImage" className="text-lg font-semibold">Upload Image (Optional)</Label>
                 <div className="flex items-center gap-4">
                   <div className="w-full h-32 border-2 border-dashed rounded-lg flex items-center justify-center relative">
                     {imagePreview ? (

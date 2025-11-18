@@ -47,7 +47,7 @@ Symptoms: {{{symptoms}}}
 Photo: {{media url=photoDataUri}}
 {{/if}}
 
-IMPORTANT: Your response must be a preliminary diagnosis. Always recommend consulting a qualified veterinarian for a definitive diagnosis and treatment.
+IMPORTANT: Your response must be a preliminary diagnosis and for informational purposes only. Always recommend consulting a qualified veterinarian for a definitive diagnosis and treatment. Do not provide a diagnosis that could be harmful if acted upon without professional consultation.
 `,
 });
 
