@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import { useState, useEffect } from 'react';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -34,6 +35,12 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 export default function LoginPage() {
   const router = useRouter();
   const { toast } = useToast();
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+  
   const {
     register,
     handleSubmit,
@@ -130,7 +137,7 @@ export default function LoginPage() {
                   )}
                 </div>
                 <Button type="submit" className="w-full h-12" disabled={isSubmitting}>
-                  {isSubmitting ? 'Signing In...' : 'Sign In'}
+                  {isClient && isSubmitting ? 'Signing In...' : 'Sign In'}
                 </Button>
               </form>
             </CardContent>
