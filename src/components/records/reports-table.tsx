@@ -1,4 +1,7 @@
-import { pastReports } from '@/lib/data';
+'use client';
+
+import { useEffect, useState } from 'react';
+import { getReports } from '@/lib/reports';
 import { Badge } from '@/components/ui/badge';
 import {
   Table,
@@ -10,7 +13,22 @@ import {
 } from '@/components/ui/table';
 import { cn } from '@/lib/utils';
 
+type Report = {
+    id?: string;
+    animalType: string;
+    date: string;
+    assignedDoctor: string;
+    status: 'Resolved' | 'Pending' | 'Urgent';
+};
+
+
 export function ReportsTable() {
+  const [pastReports, setPastReports] = useState<Report[]>([]);
+  
+  useEffect(() => {
+    setPastReports(getReports());
+  }, []);
+
   return (
     <div className="rounded-md border">
       <Table>

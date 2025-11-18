@@ -29,6 +29,7 @@ import {
 import { useToast } from '@/hooks/use-toast';
 import { doctors, animalTypes } from '@/lib/data';
 import { useSpeechRecognition } from '@/hooks/use-speech-recognition';
+import { addReport } from '@/lib/reports';
 
 const reportSchema = z.object({
   animalType: z.string().min(1, 'Please select an animal type.'),
@@ -53,7 +54,7 @@ export default function ReportPage() {
     stopListening,
   } = useSpeechRecognition();
 
-  const { control, register, handleSubmit, formState: { errors }, watch, setValue } = useForm<ReportFormValues>({
+  const { control, register, handleSubmit, formState: { errors }, watch, setValue, reset } = useForm<ReportFormValues>({
     resolver: zodResolver(reportSchema),
   });
   
@@ -83,14 +84,26 @@ export default function ReportPage() {
     // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 1500));
     
-    console.log(data);
+    const assignedDoctor = doctors.find(d=>d.id === data.assignedDoctor);
+
+    const newReport = {
+        animalType: data.animalType,
+        date: new Date().toISOString().split('T')[0],
+        assignedDoctor: assignedDoctor?.name || 'N/A',
+        status: 'Pending',
+        symptoms: data.symptoms,
+        image: imagePreview,
+    };
+    addReport(newReport);
 
     toast({
       title: 'Report Submitted Successfully',
-      description: `Dr. ${doctors.find(d=>d.id === data.assignedDoctor)?.name || 'N/A'} has been assigned to your case.`,
+      description: `Dr. ${assignedDoctor?.name || 'N/A'} has been assigned to your case.`,
     });
     
     setIsSubmitting(false);
+    reset();
+    setImagePreview(null);
     router.push('/records');
   };
 
