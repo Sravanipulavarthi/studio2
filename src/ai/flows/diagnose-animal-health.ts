@@ -60,7 +60,7 @@ IMPORTANT: Your response must be a preliminary diagnosis and for informational p
       },
     });
 
-    const output = llmResponse.output();
+    const output = llmResponse.output;
     if (!output) {
       throw new Error('Unable to get a diagnosis from the model.');
     }
