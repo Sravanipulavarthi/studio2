@@ -58,8 +58,8 @@ const diagnoseAnimalHealthFlow = ai.defineFlow(
     outputSchema: DiagnoseAnimalHealthOutputSchema,
   },
   async input => {
-    if (!input.symptoms) {
-      throw new Error("Symptoms are required for diagnosis.");
+    if (!input.symptoms && !input.photoDataUri) {
+      throw new Error("Symptoms or a photo are required for diagnosis.");
     }
     const {output} = await prompt(input);
     if (!output) {
