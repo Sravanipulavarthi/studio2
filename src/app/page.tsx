@@ -22,6 +22,7 @@ import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { Logo } from '@/components/logo';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
+import { Loader2 } from 'lucide-react';
 
 const loginSchema = z.object({
   email: z.string().email({ message: 'Invalid email address' }),
@@ -35,11 +36,6 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 export default function LoginPage() {
   const router = useRouter();
   const { toast } = useToast();
-  const [isClient, setIsClient] = useState(false);
-
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
   
   const {
     register,
@@ -137,7 +133,8 @@ export default function LoginPage() {
                   )}
                 </div>
                 <Button type="submit" className="w-full h-12" disabled={isSubmitting}>
-                  {isClient && isSubmitting ? 'Signing In...' : 'Sign In'}
+                  {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  {isSubmitting ? 'Signing In...' : 'Sign In'}
                 </Button>
               </form>
             </CardContent>
