@@ -3,9 +3,8 @@
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { Camera, Loader2, Mic, MicOff, Send, Stethoscope, User, X, FilePlus2, CheckCircle } from 'lucide-react';
+import { Camera, Loader2, Mic, MicOff, X, Sparkles, Lightbulb, ShieldCheck } from 'lucide-react';
 import Image from 'next/image';
 
 import { Button } from '@/components/ui/button';
@@ -29,23 +28,22 @@ import {
 import { useToast } from '@/hooks/use-toast';
 import { animalTypes } from '@/lib/data';
 import { useSpeechRecognition } from '@/hooks/use-speech-recognition';
-import { addReport } from '@/lib/reports';
+import { diagnoseAnimalHealth, DiagnoseAnimalHealthOutput } from '@/ai/flows/diagnose-animal-health';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
-const reportSchema = z.object({
+const diagnosisSchema = z.object({
   animalType: z.string().min(1, 'Please select an animal type.'),
   symptoms: z.string().min(10, 'Please describe the symptoms in at least 10 characters.'),
   animalImage: z.any().optional(),
 });
 
-type ReportFormValues = z.infer<typeof reportSchema>;
+type DiagnosisFormValues = z.infer<typeof diagnosisSchema>;
 
-export default function ReportPage() {
-  const router = useRouter();
+export default function DiagnosisPage() {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [reportSubmitted, setReportSubmitted] = useState(false);
-
+  const [diagnosis, setDiagnosis] = useState<DiagnoseAnimalHealthOutput | null>(null);
 
   const {
     isListening,
@@ -54,10 +52,10 @@ export default function ReportPage() {
     stopListening,
   } = useSpeechRecognition();
 
-  const { control, register, handleSubmit, formState: { errors }, watch, setValue, reset } = useForm<ReportFormValues>({
-    resolver: zodResolver(reportSchema),
+  const { control, register, handleSubmit, formState: { errors }, setValue, reset } = useForm<DiagnosisFormValues>({
+    resolver: zodResolver(diagnosisSchema),
   });
-  
+
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -70,61 +68,53 @@ export default function ReportPage() {
     }
   };
 
-  const onSubmit = async (data: ReportFormValues) => {
+  const onSubmit = async (data: DiagnosisFormValues) => {
     setIsSubmitting(true);
+    setDiagnosis(null);
     
     try {
-      const newReport = {
-          animalType: data.animalType,
-          date: new Date().toISOString().split('T')[0],
-          assignedDoctor: 'N/A', // Assigned on a different page
-          status: 'Pending' as const,
-          symptoms: data.symptoms,
-          image: imagePreview,
-      };
-      addReport(newReport);
+      const diagnosisResult = await diagnoseAnimalHealth({
+        animalType: data.animalType,
+        symptoms: data.symptoms,
+        photoDataUri: imagePreview || undefined,
+      });
+      setDiagnosis(diagnosisResult);
 
       toast({
-        title: 'Report Submitted Successfully',
-        description: `Your report has been created. You can now assign a doctor.`,
+        title: 'Analysis Complete',
+        description: `See AI diagnosis below.`,
       });
-
-      setReportSubmitted(true);
 
     } catch (error) {
       console.error(error);
       toast({
         variant: 'destructive',
-        title: 'Submission Failed',
-        description: 'An error occurred during submission.',
+        title: 'Diagnosis Failed',
+        description: 'An error occurred during AI analysis.',
       });
     } finally {
       setIsSubmitting(false);
     }
   };
-
-  const handleNewReport = () => {
+  
+  const handleNewDiagnosis = () => {
     reset();
     setImagePreview(null);
-    setReportSubmitted(false);
+    setDiagnosis(null);
   }
 
   return (
     <div className="container mx-auto max-w-3xl px-4 py-12">
       <Card className="shadow-lg">
         <CardHeader>
-          <CardTitle className="text-3xl font-bold flex items-center gap-2">
-            <FilePlus2 className="h-8 w-8 text-primary"/>
-            Create Disease Report
-          </CardTitle>
+          <CardTitle className="text-3xl font-bold">AI-Powered Diagnosis</CardTitle>
           <CardDescription>
-            Fill out this form to submit a new disease report. You can get a diagnosis and assign a doctor on separate pages.
+            Fill out the form below to get an AI-powered preliminary diagnosis for an animal.
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {!reportSubmitted ? (
+          {!diagnosis ? (
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
-              {/* Animal Type Selection */}
               <div className="space-y-2">
                 <Label className="text-lg font-semibold">Animal Type</Label>
                 <Controller
@@ -148,7 +138,6 @@ export default function ReportPage() {
                 {errors.animalType && <p className="text-sm text-red-500">{errors.animalType.message}</p>}
               </div>
 
-              {/* Symptom Input */}
               <div className="space-y-2">
                 <Label htmlFor="symptoms" className="text-lg font-semibold">Symptoms</Label>
                 <div className="relative">
@@ -173,7 +162,6 @@ export default function ReportPage() {
                 {errors.symptoms && <p className="text-sm text-red-500">{errors.symptoms.message}</p>}
               </div>
 
-              {/* Image Upload */}
               <div className="space-y-2">
                 <Label htmlFor="animalImage" className="text-lg font-semibold">Upload Image</Label>
                 <div className="flex items-center gap-4">
@@ -186,7 +174,7 @@ export default function ReportPage() {
                         </Button>
                       </>
                     ) : (
-                      <div className="text-center text-muted-foreground">
+                       <div className="text-center text-muted-foreground">
                         <Camera className="mx-auto h-8 w-8" />
                         <p className="text-sm">Click to upload or use camera</p>
                       </div>
@@ -197,26 +185,43 @@ export default function ReportPage() {
               </div>
               
               <Button type="submit" className="w-full h-12 text-lg" disabled={isSubmitting}>
-                {isSubmitting ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <Send className="mr-2 h-5 w-5" />}
-                {isSubmitting ? 'Submitting...' : 'Submit Report'}
+                {isSubmitting ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <Sparkles className="mr-2 h-5 w-5" />}
+                {isSubmitting ? 'Diagnosing...' : 'Get Diagnosis'}
               </Button>
             </form>
           ) : (
-            <div className="space-y-6 text-center">
-              <CheckCircle className="h-16 w-16 text-green-500 mx-auto animate-pulse" />
-              <h2 className="text-2xl font-bold">Report Submitted!</h2>
-              <p className="text-muted-foreground">
-                Your report has been successfully submitted. What would you like to do next?
-              </p>
-              <div className="flex flex-col sm:flex-row justify-center gap-4">
-                <Button onClick={() => router.push('/records')} className="h-12 text-lg">
-                    View All Records
-                </Button>
-                <Button onClick={() => router.push('/doctor-assignment')} variant="outline" className="h-12 text-lg">
-                    Assign a Doctor
-                </Button>
-                 <Button onClick={handleNewReport} variant="secondary" className="h-12 text-lg">
-                    Create Another Report
+            <div className="space-y-6">
+              <Alert>
+                <Sparkles className="h-4 w-4" />
+                <AlertTitle className="text-xl">AI Diagnosis Complete</AlertTitle>
+                <AlertDescription>
+                  This is a preliminary analysis. Always consult with a qualified veterinarian.
+                </AlertDescription>
+              </Alert>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <Card>
+                    <CardHeader className="flex-row items-center gap-4 space-y-0 pb-2">
+                        <ShieldCheck className="h-8 w-8 text-primary"/>
+                        <CardTitle>Suspected Disease</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <p className="text-2xl font-bold">{diagnosis.disease}</p>
+                        <p className="text-sm text-muted-foreground">Confidence: {diagnosis.confidence}</p>
+                    </CardContent>
+                </Card>
+                 <Card>
+                    <CardHeader className="flex-row items-center gap-4 space-y-0 pb-2">
+                        <Lightbulb className="h-8 w-8 text-amber-500"/>
+                        <CardTitle>Recommended Plan</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <p>{diagnosis.treatmentPlan}</p>
+                    </CardContent>
+                </Card>
+              </div>
+              <div className="flex justify-center gap-4">
+                <Button onClick={handleNewDiagnosis} variant="outline" className="w-full max-w-sm h-12 text-lg">
+                    Start New Diagnosis
                 </Button>
               </div>
             </div>

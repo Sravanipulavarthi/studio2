@@ -6,8 +6,10 @@ import { cn } from '@/lib/utils';
 
 export const navLinks = [
   { href: '/dashboard', label: 'Home' },
-  { href: '/report', label: 'Report' },
-  { href: '/records', label: 'Dashboard' },
+  { href: '/report', label: 'New Report' },
+  { href: '/diagnosis', label: 'AI Diagnosis' },
+  { href: '/records', label: 'Records' },
+  { href: '/doctor-assignment', label: 'Assign Doctor' },
   { href: '/hospitals', label: 'Hospitals' },
   { href: '/info', label: 'Info' },
   { href: '/contact', label: 'Contact' },
@@ -17,7 +19,7 @@ export function MainNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="flex items-center space-x-6 text-sm font-medium">
+    <nav className="flex items-center space-x-4 text-sm font-medium">
       {navLinks.map(({ href, label }) => (
         <Link
           key={href}

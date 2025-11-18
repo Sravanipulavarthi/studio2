@@ -2,7 +2,7 @@
 
 import { DiagnoseAnimalHealthOutput } from "@/ai/flows/diagnose-animal-health";
 
-type Report = {
+export type Report = {
     id?: string;
     animalType: string;
     date: string;
@@ -53,12 +53,43 @@ let reports: Report[] = [
 
 let nextId = 6;
 
+// Function to get reports, ensuring it runs on the client
 export const getReports = (): Report[] => {
+  if (typeof window === 'undefined') {
+    return [];
+  }
+  const storedReports = localStorage.getItem('vetconnect_reports');
+  if (storedReports) {
+    reports = JSON.parse(storedReports);
+    const maxId = reports.reduce((max, r) => {
+        const idNum = parseInt(r.id?.split('-')[1] || '0');
+        return idNum > max ? idNum : max;
+    }, 0);
+    nextId = maxId + 1;
+  }
   return reports;
 };
 
+const saveReports = () => {
+  if (typeof window !== 'undefined') {
+    localStorage.setItem('vetconnect_reports', JSON.stringify(reports));
+  }
+};
+
+
 export const addReport = (report: Omit<Report, 'id'>) => {
+    getReports(); // Ensure reports are loaded from localStorage
     const newId = `VC-${String(nextId++).padStart(3, '0')}`;
     const newReport: Report = { ...report, id: newId };
     reports.unshift(newReport);
+    saveReports();
 };
+
+export const updateReportDoctor = (reportId: string, doctorName: string) => {
+    getReports();
+    const reportIndex = reports.findIndex(r => r.id === reportId);
+    if(reportIndex !== -1) {
+        reports[reportIndex].assignedDoctor = doctorName;
+        saveReports();
+    }
+}

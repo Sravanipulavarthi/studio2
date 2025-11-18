@@ -7,7 +7,8 @@ import {
   PlusCircle,
   Stethoscope,
   PhoneMissed,
-  BookOpen
+  BookOpen,
+  BrainCircuit
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -25,6 +26,13 @@ const features = [
     icon: PlusCircle,
     href: '/report',
     cta: 'Create Report',
+  },
+   {
+    title: 'AI Diagnosis',
+    description: 'Get a quick AI-powered diagnosis for animal health issues.',
+    icon: BrainCircuit,
+    href: '/diagnosis',
+    cta: 'Get Diagnosis',
   },
   {
     title: 'View Past Records',
@@ -85,6 +93,12 @@ export default function DashboardPage() {
                     View My Records
                   </Link>
                 </Button>
+                 <Button asChild variant="outline" size="lg" className="h-12">
+                  <Link href="/diagnosis">
+                    <BrainCircuit className="mr-2 h-5 w-5" />
+                    Get AI Diagnosis
+                  </Link>
+                </Button>
               </CardContent>
             </Card>
 
@@ -122,7 +136,7 @@ export default function DashboardPage() {
                 </CardHeader>
                 <CardContent>
                   <Button asChild variant="outline">
-                    <Link href="/report">Choose Doctor</Link>
+                    <Link href="/doctor-assignment">Choose Doctor</Link>
                   </Button>
                 </CardContent>
               </Card>
