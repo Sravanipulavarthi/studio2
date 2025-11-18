@@ -3,7 +3,7 @@
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Camera, Loader2, Mic, MicOff, X, Sparkles, Lightbulb, ShieldCheck } from 'lucide-react';
 import Image from 'next/image';
 
