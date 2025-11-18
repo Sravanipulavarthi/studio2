@@ -90,8 +90,12 @@ export const pastReports = [
 ];
 
 export const hospitals = [
-    { id: 'h1', name: 'County Vet Services', lat: 34.06, lng: -118.25 },
-    { id: 'h2', name: 'Green Pastures Animal Hospital', lat: 34.04, lng: -118.22 },
-    { id: 'h3', name: 'All Creatures Clinic', lat: 34.07, lng: -118.28 },
-    { id: 'h4', name: 'Farm Animal Wellness Center', lat: 34.02, lng: -118.26 },
-]
+    { id: 'h1', name: 'Apollo Animal Hospital, Vijayawada', lat: 16.5062, lng: 80.6480, address: 'Near Benz Circle, Vijayawada, AP', phone: '+918662474747', image: 'https://picsum.photos/seed/h1/600/400' },
+    { id: 'h2', name: 'Govt. Veterinary Hospital, Guntur', lat: 16.3067, lng: 80.4365, address: 'Brodipet, Guntur, AP', phone: '+918632220033', image: 'https://picsum.photos/seed/h2/600/400' },
+    { id: 'h3', name: 'Cure & Care Pet Clinic, Kurnool', lat: 15.8281, lng: 78.0373, address: 'N.R. Peta, Kurnool, AP', phone: '+919876543210', image: 'https://picsum.photos/seed/h3/600/400' },
+    { id: 'h4', name: 'Sree Venkateswara Veterinary University, Kadapa', lat: 14.4674, lng: 78.8242, address: 'Pulivendula Road, Kadapa, AP', phone: '+918562244367', image: 'https://picsum.photos/seed/h4/600/400' },
+    { id: 'h5', name: 'District Veterinary Hospital, Eluru', lat: 16.7139, lng: 81.1025, address: 'RR Pet, Eluru, AP', phone: '+918812230656', image: 'https://picsum.photos/seed/h5/600/400' },
+    { id: 'h6', name: 'Olive\'s Pet Clinic, Hyderabad', lat: 17.3850, lng: 78.4867, address: 'Banjara Hills, Hyderabad, Telangana', phone: '+914023355544', image: 'https://picsum.photos/seed/h6/600/400' },
+    { id: 'h7', name: 'Blue Cross Veterinary Hospital, Visakhapatnam', lat: 17.6868, lng: 83.2185, address: 'MVP Colony, Visakhapatnam, AP', phone: '+918912786939', image: 'https://picsum.photos/seed/h7/600/400' },
+    { id: 'h8', name: 'Paws & Claws Pet Clinic, Tirupati', lat: 13.6288, lng: 79.4192, address: 'Korlagunta, Tirupati, AP', phone: '+919988776655', image: 'https://picsum.photos/seed/h8/600/400' },
+];
