@@ -10,6 +10,7 @@ export const navLinks = [
   { href: '/diagnosis', label: 'AI Diagnosis' },
   { href: '/records', label: 'Records' },
   { href: '/doctor-assignment', label: 'Assign Doctor' },
+  { href: '/vaccination-reminders', label: 'Vaccinations' },
   { href: '/hospitals', label: 'Hospitals' },
   { href: '/info', label: 'Disease Info' },
   { href: '/contact', label: 'About & Contact' },

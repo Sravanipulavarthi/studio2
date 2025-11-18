@@ -8,7 +8,8 @@ import {
   Stethoscope,
   PhoneMissed,
   BookOpen,
-  BrainCircuit
+  BrainCircuit,
+  Syringe
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -53,7 +54,7 @@ const features = [
     description: 'Search our database for information on animal diseases.',
     icon: BookOpen,
     href: '/info',
-    cta: 'Search Diseases',
+cta: 'Search Diseases',
   },
 ];
 
@@ -123,6 +124,23 @@ export default function DashboardPage() {
                 </CardContent>
               </Card>
             ))}
+            
+             <Card className="hover:shadow-lg transition-shadow duration-300">
+                <CardHeader>
+                  <CardTitle className="flex items-start gap-4">
+                    <div className="bg-purple-500/10 p-3 rounded-full">
+                       <Syringe className="h-6 w-6 text-purple-500" />
+                    </div>
+                    <span>Vaccination Reminders</span>
+                  </CardTitle>
+                  <CardDescription className="pt-2">Manage your livestock and set vaccination reminders.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Button asChild variant="outline">
+                    <Link href="/vaccination-reminders">Set Reminder</Link>
+                  </Button>
+                </CardContent>
+              </Card>
 
              <Card className="hover:shadow-lg transition-shadow duration-300">
                 <CardHeader>
