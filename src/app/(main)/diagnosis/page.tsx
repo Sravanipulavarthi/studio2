@@ -4,7 +4,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import React, { useState, useEffect } from 'react';
-import { Camera, Loader2, Mic, MicOff, X, Sparkles, Lightbulb, ShieldCheck, PawPrint, MessageSquare, Bone } from 'lucide-react';
+import { Camera, Loader2, Mic, MicOff, X, Sparkles, PawPrint, MessageSquare, Bone, ShieldCheck } from 'lucide-react';
 import Image from 'next/image';
 
 import { Button } from '@/components/ui/button';
@@ -30,6 +30,7 @@ import { animalTypes } from '@/lib/data';
 import { useSpeechRecognition } from '@/hooks/use-speech-recognition';
 import { diagnoseAnimalHealth, DiagnoseAnimalHealthOutput, DiagnoseAnimalHealthInput } from '@/ai/flows/diagnose-animal-health';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Separator } from '@/components/ui/separator';
 
 const diagnosisSchema = z.object({
   animalType: z.string().min(1, 'Please select an animal type.'),
@@ -54,7 +55,7 @@ export default function DiagnosisPage() {
     stopListening,
   } = useSpeechRecognition();
 
-  const { control, register, handleSubmit, formState: { errors }, setValue, reset, watch } = useForm<DiagnosisFormValues>({
+  const { control, register, handleSubmit, formState: { errors }, setValue, reset } = useForm<DiagnosisFormValues>({
     resolver: zodResolver(diagnosisSchema),
   });
   
@@ -208,79 +209,83 @@ export default function DiagnosisPage() {
             </form>
           ) : (
             <div className="space-y-6">
-                <Alert>
+                <Alert variant="destructive">
                     <Sparkles className="h-4 w-4" />
-                    <AlertTitle className="text-xl">AI Diagnosis Report</AlertTitle>
+                    <AlertTitle>Disclaimer</AlertTitle>
                     <AlertDescription>
-                    This is a preliminary analysis. Always consult with a qualified veterinarian.
+                    This is a preliminary analysis powered by AI. Always consult with a qualified veterinarian for a definitive diagnosis.
                     </AlertDescription>
                 </Alert>
                 
                 <Card>
                     <CardHeader>
-                        <CardTitle className="text-xl">Submission Summary</CardTitle>
+                        <CardTitle className="text-2xl">AI Diagnosis Report</CardTitle>
                     </CardHeader>
-                    <CardContent className="space-y-4">
-                        <div className="flex items-start gap-4">
-                           <PawPrint className="h-5 w-5 text-muted-foreground mt-1" />
-                           <div>
-                                <p className="font-semibold">Animal Type</p>
-                                <p className="text-muted-foreground">{submittedData.animalType}</p>
-                           </div>
-                        </div>
-                        <div className="flex items-start gap-4">
-                           <MessageSquare className="h-5 w-5 text-muted-foreground mt-1" />
-                           <div>
-                                <p className="font-semibold">Symptoms</p>
-                                <p className="text-muted-foreground">{submittedData.symptoms}</p>
-                           </div>
-                        </div>
-                        {submittedData.photoDataUri && (
-                            <div className="space-y-2">
-                                <p className="font-semibold">Submitted Image</p>
-                                <div className="relative w-full h-48 rounded-md overflow-hidden">
-                                <Image src={submittedData.photoDataUri} alt="Submitted animal" layout="fill" objectFit="cover" />
+                    <CardContent className="space-y-6">
+                       <div>
+                            <h3 className="font-semibold text-lg mb-2">Submission Details</h3>
+                            <div className="space-y-4">
+                                <div className="flex items-start gap-4">
+                                <PawPrint className="h-5 w-5 text-muted-foreground mt-1" />
+                                <div>
+                                    <p className="font-semibold">Animal Type</p>
+                                    <p className="text-muted-foreground">{submittedData.animalType}</p>
                                 </div>
+                                </div>
+                                <div className="flex items-start gap-4">
+                                <MessageSquare className="h-5 w-5 text-muted-foreground mt-1" />
+                                <div>
+                                    <p className="font-semibold">Symptoms</p>
+                                    <p className="text-muted-foreground">{submittedData.symptoms}</p>
+                                </div>
+                                </div>
+                                {submittedData.photoDataUri && (
+                                    <div className="space-y-2">
+                                        <p className="font-semibold">Submitted Image</p>
+                                        <div className="relative w-full h-48 rounded-md overflow-hidden">
+                                        <Image src={submittedData.photoDataUri} alt="Submitted animal" layout="fill" objectFit="cover" />
+                                        </div>
+                                    </div>
+                                )}
                             </div>
-                        )}
+                       </div>
+                       
+                       <Separator />
+
+                       <div>
+                            <h3 className="font-semibold text-lg mb-4">AI Analysis</h3>
+                             {isSubmitting ? (
+                                <div className="flex items-center justify-center gap-2 py-8">
+                                    <Loader2 className="h-6 w-6 animate-spin text-primary"/>
+                                    <p className="text-lg">Analyzing...</p>
+                                </div>
+                            ) : diagnosis ? (
+                                <div className="space-y-4">
+                                    <div className="flex items-start gap-4">
+                                        <ShieldCheck className="h-5 w-5 text-primary mt-1" />
+                                        <div>
+                                            <p className="font-semibold">Suspected Disease</p>
+                                            <p className="text-lg font-bold">{diagnosis.disease}</p>
+                                            <p className="text-sm text-muted-foreground">Confidence: {diagnosis.confidence}</p>
+                                        </div>
+                                    </div>
+                                     <div className="flex items-start gap-4">
+                                        <Bone className="h-5 w-5 text-amber-500 mt-1" />
+                                        <div>
+                                            <p className="font-semibold">Recommended Treatment Plan</p>
+                                            <p className="text-muted-foreground">{diagnosis.treatmentPlan}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            ) : (
+                                <Alert variant="destructive">
+                                    <AlertTitle>Analysis Failed</AlertTitle>
+                                    <AlertDescription>We couldn't generate a diagnosis. Please try again or rephrase your symptoms.</AlertDescription>
+                                </Alert>
+                            )}
+                       </div>
                     </CardContent>
                 </Card>
-
-              {isSubmitting ? (
-                <div className="flex items-center justify-center gap-2 py-8">
-                    <Loader2 className="h-6 w-6 animate-spin text-primary"/>
-                    <p className="text-lg">Analyzing...</p>
-                </div>
-              ) : diagnosis ? (
-                <div className="space-y-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <Card>
-                            <CardHeader className="flex-row items-center gap-4 space-y-0 pb-2">
-                                <ShieldCheck className="h-8 w-8 text-primary"/>
-                                <CardTitle>Suspected Disease</CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <p className="text-2xl font-bold">{diagnosis.disease}</p>
-                                <p className="text-sm text-muted-foreground">Confidence: {diagnosis.confidence}</p>
-                            </CardContent>
-                        </Card>
-                        <Card>
-                            <CardHeader className="flex-row items-center gap-4 space-y-0 pb-2">
-                                <Bone className="h-8 w-8 text-amber-500"/>
-                                <CardTitle>Recommended Plan</CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <p>{diagnosis.treatmentPlan}</p>
-                            </CardContent>
-                        </Card>
-                    </div>
-                </div>
-              ) : (
-                 <Alert variant="destructive">
-                    <AlertTitle>Analysis Failed</AlertTitle>
-                    <AlertDescription>We couldn't generate a diagnosis. Please try again or rephrase your symptoms.</AlertDescription>
-                </Alert>
-              )}
 
               <div className="flex justify-center gap-4 pt-4">
                 <Button onClick={handleNewDiagnosis} variant="outline" className="w-full max-w-sm h-12 text-lg">
@@ -294,3 +299,5 @@ export default function DiagnosisPage() {
     </div>
   );
 }
+
+    
