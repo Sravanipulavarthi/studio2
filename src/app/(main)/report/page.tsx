@@ -4,7 +4,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Camera, Loader2, Mic, MicOff, Send, Stethoscope, User, X, FilePlus2, CheckCircle } from 'lucide-react';
 import Image from 'next/image';
 
@@ -57,6 +57,12 @@ export default function ReportPage() {
   const { control, register, handleSubmit, formState: { errors }, watch, setValue, reset } = useForm<ReportFormValues>({
     resolver: zodResolver(reportSchema),
   });
+
+  useEffect(() => {
+    if (transcript) {
+        setValue('symptoms', transcript);
+    }
+  }, [transcript, setValue]);
   
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -157,7 +163,6 @@ export default function ReportPage() {
                     placeholder="e.g., The cow is lethargic, has a high fever, and is not eating..."
                     className="min-h-[150px] text-base pr-12"
                     {...register('symptoms')}
-                    defaultValue={transcript}
                   />
                   <Button
                     type="button"

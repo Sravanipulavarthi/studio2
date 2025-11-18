@@ -3,7 +3,7 @@
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Camera, Loader2, Mic, MicOff, X, Sparkles, Lightbulb, ShieldCheck } from 'lucide-react';
 import Image from 'next/image';
 
@@ -56,9 +56,9 @@ export default function DiagnosisPage() {
     resolver: zodResolver(diagnosisSchema),
   });
   
-  const symptomsValue = watch('symptoms', transcript);
+  const symptomsValue = watch('symptoms');
   
-  React.useEffect(() => {
+  useEffect(() => {
     if (transcript) {
         setValue('symptoms', transcript);
     }
@@ -157,8 +157,6 @@ export default function DiagnosisPage() {
                     placeholder="e.g., The cow is lethargic, has a high fever, and is not eating..."
                     className="min-h-[150px] text-base pr-12"
                     {...register('symptoms')}
-                    value={symptomsValue}
-                    onChange={(e) => setValue('symptoms', e.target.value)}
                   />
                   <Button
                     type="button"
