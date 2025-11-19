@@ -36,6 +36,11 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 export default function LoginPage() {
   const router = useRouter();
   const { toast } = useToast();
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
   
   const {
     register,
@@ -133,7 +138,7 @@ export default function LoginPage() {
                   )}
                 </div>
                 <Button type="submit" className="w-full h-12" disabled={isSubmitting}>
-                  {isSubmitting ? (
+                  {isSubmitting && isClient ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                       Signing In...
