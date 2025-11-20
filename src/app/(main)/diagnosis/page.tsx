@@ -3,7 +3,7 @@
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Camera, Loader2, Mic, MicOff, X, Sparkles, PawPrint, MessageSquare, Bone, ShieldCheck } from 'lucide-react';
 import Image from 'next/image';
 
@@ -46,6 +46,8 @@ export default function DiagnosisPage() {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [diagnosis, setDiagnosis] = useState<DiagnoseAnimalHealthOutput | null>(null);
   const [submittedData, setSubmittedData] = useState<DiagnoseAnimalHealthInput | null>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [hasCameraPermission, setHasCameraPermission] = useState<boolean | null>(null);
 
 
   const {
@@ -64,6 +66,28 @@ export default function DiagnosisPage() {
         setValue('symptoms', transcript);
     }
   }, [transcript, setValue]);
+
+  useEffect(() => {
+    const getCameraPermission = async () => {
+      if (hasCameraPermission === null) {
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+          setHasCameraPermission(true);
+          if (videoRef.current) {
+            videoRef.current.srcObject = stream;
+          }
+          // Stop tracks once permission is granted and component unmounts
+          return () => {
+            stream.getTracks().forEach(track => track.stop());
+          };
+        } catch (error) {
+          console.error('Error accessing camera:', error);
+          setHasCameraPermission(false);
+        }
+      }
+    };
+    getCameraPermission();
+  }, [hasCameraPermission]);
 
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -103,12 +127,15 @@ export default function DiagnosisPage() {
         description: `See AI diagnosis report below.`,
       });
 
-    } catch (error) {
+    } catch (error: any) {
       console.error("Diagnosis failed:", error);
+      const isOverloaded = error.message?.includes('503') || error.message?.includes('overloaded');
       toast({
         variant: 'destructive',
         title: 'Diagnosis Failed',
-        description: 'An error occurred during AI analysis. Please try again.',
+        description: isOverloaded
+          ? 'The AI service is currently busy. Please try again in a moment.'
+          : 'An unexpected error occurred. Please check your connection or try again.',
       });
     } finally {
       setIsSubmitting(false);
@@ -200,6 +227,14 @@ export default function DiagnosisPage() {
                     <Input id="animalImage" type="file" accept="image/*" capture="environment" className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onChange={handleImageChange} />
                   </div>
                 </div>
+                {hasCameraPermission === false && (
+                  <Alert variant="destructive" className="mt-2">
+                    <AlertTitle>Camera Access Denied</AlertTitle>
+                    <AlertDescription>
+                      Please enable camera permissions in your browser settings to use this feature.
+                    </AlertDescription>
+                  </Alert>
+                )}
               </div>
               
               <Button type="submit" className="w-full h-12 text-lg" disabled={isSubmitting}>
@@ -299,5 +334,3 @@ export default function DiagnosisPage() {
     </div>
   );
 }
-
-    

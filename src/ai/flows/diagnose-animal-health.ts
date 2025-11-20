@@ -39,6 +39,7 @@ const diagnoseAnimalHealthFlow = ai.defineFlow(
     name: 'diagnoseAnimalHealthFlow',
     inputSchema: DiagnoseAnimalHealthInputSchema,
     outputSchema: DiagnoseAnimalHealthOutputSchema,
+    retries: 3, // Retry the flow up to 3 times on failure
   },
   async (input) => {
     if (!input.symptoms && !input.photoDataUri) {
