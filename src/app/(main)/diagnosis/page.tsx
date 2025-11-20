@@ -69,30 +69,26 @@ export default function DiagnosisPage() {
 
   useEffect(() => {
     const getCameraPermission = async () => {
-      if (hasCameraPermission === null) {
-        try {
-          const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-          setHasCameraPermission(true);
-          if (videoRef.current) {
-            videoRef.current.srcObject = stream;
-          }
-          // Stop tracks once permission is granted and component unmounts
-          return () => {
-            stream.getTracks().forEach(track => track.stop());
-          };
-        } catch (error) {
-          console.error('Error accessing camera:', error);
-          setHasCameraPermission(false);
-          toast({
-            variant: 'destructive',
-            title: 'Camera Access Denied',
-            description: 'Please enable camera permissions in your browser settings to use this feature.',
-          });
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        setHasCameraPermission(true);
+
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
         }
+      } catch (error) {
+        console.error('Error accessing camera:', error);
+        setHasCameraPermission(false);
+        toast({
+          variant: 'destructive',
+          title: 'Camera Access Denied',
+          description: 'Please enable camera permissions in your browser settings to use this app.',
+        });
       }
     };
+
     getCameraPermission();
-  }, [hasCameraPermission, toast]);
+  }, [toast]);
 
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -339,3 +335,5 @@ export default function DiagnosisPage() {
     </div>
   );
 }
+
+    
