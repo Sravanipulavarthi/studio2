@@ -83,11 +83,16 @@ export default function DiagnosisPage() {
         } catch (error) {
           console.error('Error accessing camera:', error);
           setHasCameraPermission(false);
+          toast({
+            variant: 'destructive',
+            title: 'Camera Access Denied',
+            description: 'Please enable camera permissions in your browser settings to use this feature.',
+          });
         }
       }
     };
     getCameraPermission();
-  }, [hasCameraPermission]);
+  }, [hasCameraPermission, toast]);
 
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
