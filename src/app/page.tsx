@@ -41,7 +41,7 @@ export default function LoginPage() {
   useEffect(() => {
     setIsClient(true);
   }, []);
-  
+
   const {
     register,
     handleSubmit,
@@ -137,16 +137,18 @@ export default function LoginPage() {
                     </p>
                   )}
                 </div>
-                <Button type="submit" className="w-full h-12" disabled={isSubmitting}>
-                  {isSubmitting ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Signing In...
-                    </>
-                  ) : (
-                    'Sign In'
-                  )}
-                </Button>
+                {isClient && (
+                    <Button type="submit" className="w-full h-12" disabled={isSubmitting}>
+                    {isSubmitting ? (
+                        <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Signing In...
+                        </>
+                    ) : (
+                        'Sign In'
+                    )}
+                    </Button>
+                )}
               </form>
             </CardContent>
             <CardFooter className="p-0 mt-6 flex-col gap-4">
@@ -160,9 +162,11 @@ export default function LoginPage() {
                   </span>
                 </div>
               </div>
-              <Button onClick={handleGuestLogin} variant="outline" className="w-full h-12">
-                Continue as Guest
-              </Button>
+              {isClient && (
+                <Button onClick={handleGuestLogin} variant="outline" className="w-full h-12">
+                    Continue as Guest
+                </Button>
+              )}
               <p className="text-center text-sm text-muted-foreground">
                 Don&apos;t have an account?{' '}
                 <Link
