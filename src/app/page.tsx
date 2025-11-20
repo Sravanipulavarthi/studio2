@@ -137,7 +137,7 @@ export default function LoginPage() {
                     </p>
                   )}
                 </div>
-                {isClient && (
+                {isClient ? (
                     <Button type="submit" className="w-full h-12" disabled={isSubmitting}>
                     {isSubmitting ? (
                         <>
@@ -148,6 +148,10 @@ export default function LoginPage() {
                         'Sign In'
                     )}
                     </Button>
+                ) : (
+                  <Button type="submit" className="w-full h-12" disabled={true}>
+                    Sign In
+                  </Button>
                 )}
               </form>
             </CardContent>
@@ -162,8 +166,12 @@ export default function LoginPage() {
                   </span>
                 </div>
               </div>
-              {isClient && (
+              {isClient ? (
                 <Button onClick={handleGuestLogin} variant="outline" className="w-full h-12">
+                    Continue as Guest
+                </Button>
+              ) : (
+                 <Button variant="outline" className="w-full h-12" disabled={true}>
                     Continue as Guest
                 </Button>
               )}
