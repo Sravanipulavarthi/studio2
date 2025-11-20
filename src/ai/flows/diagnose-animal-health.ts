@@ -9,6 +9,7 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
+import {Part} from '@genkit-ai/google-genai';
 
 const DiagnoseAnimalHealthInputSchema = z.object({
   photoDataUri: z
@@ -44,17 +45,24 @@ const diagnoseAnimalHealthFlow = ai.defineFlow(
       throw new Error('Symptoms or a photo are required for diagnosis.');
     }
 
-    const llmResponse = await ai.generate({
-      prompt: `You are an expert veterinary assistant. Your task is to provide a preliminary diagnosis based on the information provided.
+    const promptParts: (string | Part)[] = [
+        `You are an expert veterinary assistant. Your task is to provide a preliminary diagnosis based on the information provided.
 
 Analyze the symptoms and, if available, the photo to identify a potential disease. Provide a confidence level for your diagnosis and suggest a basic treatment plan.
 
 Animal Type: ${input.animalType}
 Symptoms: ${input.symptoms}
-${input.photoDataUri ? `Photo: {{media url="${input.photoDataUri}"}}` : ''}
 
 IMPORTANT: Your response must be a preliminary diagnosis and for informational purposes only. Always recommend consulting a qualified veterinarian for a definitive diagnosis and treatment. Do not provide a diagnosis that could be harmful if acted upon without professional consultation.
-`,
+`
+    ];
+
+    if(input.photoDataUri) {
+        promptParts.push({media: {url: input.photoDataUri}});
+    }
+
+    const llmResponse = await ai.generate({
+      prompt: promptParts,
       output: {
         schema: DiagnoseAnimalHealthOutputSchema,
       },
